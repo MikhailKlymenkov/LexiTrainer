@@ -1,0 +1,128 @@
+﻿<UserControl x:Class="LexiTrainer.Pages.Views.WordLearningPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:viewmodels="clr-namespace:LexiTrainer.Pages.ViewModels"
+      xmlns:sys="clr-namespace:System;assembly=mscorlib"
+      d:DataContext="{d:DesignInstance Type=viewmodels:WordLearningPageViewModel}"
+      mc:Ignorable="d" x:Name="Page" Loaded="PageLoaded" Unloaded="PageUnloaded"
+      d:DesignHeight="650" d:DesignWidth="1000" Background="WhiteSmoke">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Menu Grid.Row="0">
+            <MenuItem Header="Home" Command="{Binding HomeCommand}"/>
+        </Menu>
+        <StackPanel Grid.Row="1">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,5,12,0">
+                <TextBlock Text="Words left:"/>
+                <TextBlock d:Text="9" Margin="7,0,0,0" Text="{Binding WordsLeft}"/>
+            </StackPanel>
+            <TextBlock d:Text="Жовтий" Text="{Binding Word}" Margin="0,100,0,0"
+                   VerticalAlignment="Top" HorizontalAlignment="Center" FontWeight="Bold" FontSize="30"/>
+            <TextBlock d:Text="(жовтий)" Text="{Binding Path=WordDescription, StringFormat=({0})}" Margin="0,7,0,0" Foreground="Gray"
+                   VerticalAlignment="Top" HorizontalAlignment="Center" FontWeight="Bold" FontSize="12"
+                   Visibility="{Binding WordDescription, Converter={StaticResource NullOrEmptyToVisibilityConverter}, ConverterParameter={x:Static Visibility.Collapsed}}"/>
+            <StackPanel Margin="0,60,0,0" HorizontalAlignment="Center" d:Visibility="Visible">
+                <StackPanel.Style>
+                    <Style TargetType="StackPanel">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding TrainingMode}" Value="{x:Static viewmodels:TrainingMode.Easy}">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </StackPanel.Style>
+                <Viewbox HorizontalAlignment="Left" Height="30">
+                    <RadioButton x:Name="ARadioButton" GroupName="Translations" d:Content="Blue" Content="{Binding ATranslation}"
+                                 Command="{Binding SelectAnswerCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Content}" />
+                </Viewbox>
+                <Viewbox HorizontalAlignment="Left" Margin="0,20,0,0" Height="30">
+                    <RadioButton x:Name="BRadioButton" d:Content="Yellow" GroupName="Translations" Content="{Binding BTranslation}"
+                                 Command="{Binding SelectAnswerCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Content}" />
+                </Viewbox>
+                <Viewbox HorizontalAlignment="Left" Margin="0,20,0,0" Height="30">
+                    <RadioButton x:Name="CRadioButton" d:Content="Red" GroupName="Translations" Content="{Binding CTranslation}"
+                                 Command="{Binding SelectAnswerCommand}" CommandParameter="{Binding RelativeSource={RelativeSource Self}, Path=Content}" />
+                </Viewbox>
+            </StackPanel>
+            <StackPanel Margin="0,60,0,0" Orientation="Horizontal" HorizontalAlignment="Center">
+                <StackPanel.Style>
+                    <Style TargetType="StackPanel">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding TrainingMode}" Value="{x:Static viewmodels:TrainingMode.Hard}">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </StackPanel.Style>
+                <TextBlock VerticalAlignment="Center" Text="Translation:" FontSize="20"/>
+                <TextBox Margin="10,0,0,0" Width="200" Text="{Binding Translation}"/>
+            </StackPanel>
+            <TextBlock Visibility="{Binding CorrectTranslation, Converter={StaticResource NullOrEmptyToVisibilityConverter}, ConverterParameter={x:Static Visibility.Hidden}}"
+                       HorizontalAlignment="Center" Margin="0,40,0,0" FontSize="20" FontWeight="Bold">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsResultSuccessful}" Value="True">
+                                <Setter Property="Foreground" Value="Green"/>
+                                <Setter Property="Text" Value="Correct!"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsResultSuccessful}" Value="False">
+                                <Setter Property="Foreground" Value="Red"/>
+                                <Setter Property="Text" Value="{Binding CorrectTranslation, StringFormat=Incorrect! Correct answer: \{0\}}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+            <Button Margin="0,50,0,0" Width="250">
+                <Button.Style>
+                    <Style TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+                        <Setter Property="Content" Value="Ok"/>
+                        <Setter Property="Command" Value="{Binding CheckAnswerCommand}"/>
+                        <Style.Triggers>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Binding="{Binding WordsLeft}">
+                                        <Condition.Value>
+                                            <sys:Int32>0</sys:Int32>
+                                        </Condition.Value>
+                                    </Condition>
+                                    <Condition Binding="{Binding CorrectTranslation, Converter={StaticResource NullOrEmptyToBoolConverter}}" Value="False"/>
+                                </MultiDataTrigger.Conditions>
+                                <MultiDataTrigger.Setters>
+                                    <Setter Property="Content" Value="Finish"/>
+                                    <Setter Property="Command" Value="{Binding FinishCommand}"/>
+                                </MultiDataTrigger.Setters>
+                            </MultiDataTrigger>
+                            <MultiDataTrigger>
+                                <MultiDataTrigger.Conditions>
+                                    <Condition Value="False">
+                                        <Condition.Binding>
+                                            <Binding Path="WordsLeft" Converter="{StaticResource EqualityToBoolConverter}">
+                                                <Binding.ConverterParameter>
+                                                    <sys:Int32>0</sys:Int32>
+                                                </Binding.ConverterParameter>
+                                            </Binding>
+                                        </Condition.Binding>
+                                    </Condition>
+                                    <Condition Binding="{Binding CorrectTranslation, Converter={StaticResource NullOrEmptyToBoolConverter}}" Value="False"/>
+                                </MultiDataTrigger.Conditions>
+                                <MultiDataTrigger.Setters>
+                                    <Setter Property="Content" Value="Next word"/>
+                                    <Setter Property="Command" Value="{Binding NextWordCommand}"/>
+                                </MultiDataTrigger.Setters>
+                            </MultiDataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+        </StackPanel>
+    </Grid>
+</UserControl>

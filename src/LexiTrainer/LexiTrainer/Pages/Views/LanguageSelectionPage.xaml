@@ -1,0 +1,67 @@
+﻿<UserControl x:Class="LexiTrainer.Pages.Views.LanguageSelectionPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:viewmodels="clr-namespace:LexiTrainer.Pages.ViewModels" 
+      d:DataContext="{d:DesignInstance Type=viewmodels:LanguageSelectionPageViewModel}"
+      mc:Ignorable="d" x:Name="Page"
+      d:DesignHeight="650" d:DesignWidth="1000" Background="WhiteSmoke">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition />
+        </Grid.RowDefinitions>
+        <Menu Grid.Row="0">
+            <MenuItem Header="Account">
+                <MenuItem Header="Change password" Command="{Binding ChangePasswordCommand}"/>
+                <MenuItem Header="Sign out" Command="{Binding SignOutCommand}"/>
+            </MenuItem>
+            <MenuItem Header="Words">
+                <MenuItem Header="Import dictionary" Command="{Binding ImportDictionaryCommand}"/>
+                <MenuItem Header="See/edit words" Command="{Binding SeeWordsCommand}"/>
+                <MenuItem Header="Export words"  Command="{Binding ExportCommand}" />
+            </MenuItem>
+        </Menu>
+        <TextBlock Grid.Row="1" Text="Select language" Margin="0,20,0,0"
+                   VerticalAlignment="Top" HorizontalAlignment="Center" FontWeight="Bold" FontSize="30"/>
+        <TextBlock Visibility="{Binding IsNoWordsVisible, Converter={StaticResource BoolToVisibilityConverter}}"
+                   Grid.Row="1" Text="No words" Foreground="Gray"
+                   VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold" FontSize="30"/>
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Auto">
+            <ItemsControl ItemsSource="{Binding Languages}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Button Command="{Binding ElementName=Page, Path=DataContext.SelectLanguageCommand}" CommandParameter="{Binding}"
+                                Width="160" Height="240" Margin="30" Cursor="Hand" OverridesDefaultStyle="True">
+                            <Button.Template>
+                                <ControlTemplate TargetType="{x:Type Button}">
+                                    <Border Background="AliceBlue" CornerRadius="15" BorderBrush="Black" BorderThickness="2">
+                                        <Grid>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="*"/>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="27"/>
+                                            </Grid.RowDefinitions>
+                                            <TextBlock Grid.Row="0" Text="{Binding Name}" FontSize="25" d:Text="Ukrainian" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            <Separator Background="Black" Grid.Row="1"/>
+                                            <StackPanel Grid.Row="2" Orientation="Horizontal">
+                                                <TextBlock FontSize="10" Margin="10,0,0,0" Text="Words count:" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                                                <TextBlock FontSize="10" Margin="5,0,0,0" d:Text="45" Text="{Binding WordsCount}" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

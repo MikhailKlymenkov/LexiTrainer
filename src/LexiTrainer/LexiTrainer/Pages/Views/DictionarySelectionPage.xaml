@@ -1,0 +1,68 @@
+﻿<UserControl x:Class="LexiTrainer.Pages.Views.DictionarySelectionPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:viewmodels="clr-namespace:LexiTrainer.Pages.ViewModels"
+      d:DataContext="{d:DesignInstance Type=viewmodels:DictionarySelectionPageViewModel}"
+      mc:Ignorable="d" x:Name="Page"
+      d:DesignHeight="650" d:DesignWidth="1000" Background="WhiteSmoke">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Menu Grid.Row="0">
+            <MenuItem Header="Home" Command="{Binding HomeCommand}"/>
+            <MenuItem Header="Words">
+                <MenuItem Header="Import dictionary" Command="{Binding ImportDictionaryCommand}"/>
+                <MenuItem Header="Add dictionary" Command="{Binding AddDictionaryCommand}"/>
+            </MenuItem>
+        </Menu>
+        <TextBlock Grid.Row="1" Text="Select dictionary" Margin="0,20,0,0"
+                   VerticalAlignment="Top" HorizontalAlignment="Center" FontWeight="Bold" FontSize="30"/>
+        <StackPanel Grid.Row="2" Margin="30,10,10,10" Orientation="Horizontal">
+            <TextBlock Text="Group by:" />
+            <ComboBox Margin="7,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left"
+                      ItemsSource="{Binding GroupModes}" SelectedValue="{Binding GroupMode}"/>
+        </StackPanel>
+        <ScrollViewer Grid.Row="3" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <ItemsControl ItemsSource="{Binding Dictionaries}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Button x:Name="DictionaryButton" Command="{Binding ElementName=Page, Path=DataContext.SelectDictionaryCommand}" CommandParameter="{Binding}"
+                                Width="160" Height="240" Margin="30" Cursor="Hand" OverridesDefaultStyle="True">
+                            <Button.Template>
+                                <ControlTemplate TargetType="{x:Type Button}">
+                                    <Border Background="AliceBlue" CornerRadius="15" BorderBrush="Black" BorderThickness="2">
+                                        <TextBlock Text="{Binding}" FontSize="25" d:Text="Ukrainian" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+                            <Button.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="See/edit dictionary" 
+                                              Command="{Binding Source={x:Reference Name=Page}, Path=DataContext.SeeDictionaryCommand}"
+                                              CommandParameter="{Binding}" />
+                                    <MenuItem Header="Delete dictionary" 
+                                              Command="{Binding Source={x:Reference Name=Page}, Path=DataContext.DeleteDictionaryCommand}"
+                                              CommandParameter="{Binding}" />
+                                    <MenuItem Header="Export dictionary" 
+                                              Command="{Binding Source={x:Reference Name=Page}, Path=DataContext.ExportDictionaryCommand}"
+                                              CommandParameter="{Binding}" />
+                                </ContextMenu>
+                            </Button.ContextMenu>
+                        </Button>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+        </ScrollViewer>
+    </Grid>
+</UserControl>
